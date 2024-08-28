@@ -30,6 +30,13 @@ func main() {
 		}
 	}(client)
 
+	if err := client.CreateQueue("customers_created", true, false); err != nil {
+		panic(err)
+	}
+	if err := client.CreateQueue("customers_test", false, true); err != nil {
+		panic(err)
+	}
+
 	time.Sleep(30 * time.Second)
 
 	log.Println(client)

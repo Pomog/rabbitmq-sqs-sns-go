@@ -45,3 +45,9 @@ func NewRabbitMQClient(conn *amqp.Connection) (RabbitClient, error) {
 func (rc RabbitClient) Close() error {
 	return rc.ch.Close()
 }
+
+// CreateQueue will create a new queue based on given cfgs
+func (rc RabbitClient) CreateQueue(queueName string, durable, autoDelete bool) error {
+	_, err := rc.ch.QueueDeclare(queueName, durable, autoDelete, false, false, nil)
+	return err
+}
