@@ -34,3 +34,15 @@ docker exec rabbitmq rabbitmqctl add_vhost customers
 docker exec rabbitmq rabbitmqctl set_permissions -p customers admin ".*" ".*" ".*"
 ```
 
+## Declaration of the Topic exchange using the rabbitmqadmin.
+```bash
+docker exec rabbitmq rabbitmqadmin declare exchange --vhost=customers name=customer_events type=topic -u admin -p password durable=true
+```
+
+## Giving the user permission to send on this exchange, allow posting on the vhost customers on the exchange customer_events on any routing key starting with customers.
+```bash
+docker exec rabbitmq rabbitmqctl set_topic_permissions -p customers admin customer_events "^customers.*" "^customers.*"
+```
+
+
+

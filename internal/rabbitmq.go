@@ -25,7 +25,7 @@ func ConnectRabbitMQ(username, password, host, vhost string) (*amqp.Connection, 
 }
 
 // NewRabbitMQClient will connect and return a Rabbit client with an open connection
-// Accepts a amqp Connection to be reused, to avoid spawning one TCP connection per concurrent client
+// Accepts an amqp Connection to be reused, to avoid spawning one TCP connection per concurrent client
 func NewRabbitMQClient(conn *amqp.Connection) (RabbitClient, error) {
 	// Unique, Concurrent Server Channel to process/send messages
 	// A good rule of thumb is to always REUSE Conn across applications
@@ -50,4 +50,23 @@ func (rc RabbitClient) Close() error {
 func (rc RabbitClient) CreateQueue(queueName string, durable, autoDelete bool) error {
 	_, err := rc.ch.QueueDeclare(queueName, durable, autoDelete, false, false, nil)
 	return err
+}
+
+// CreateBinding connects a queue to an exchange using the specified binding rule.
+//
+// Parameters:
+//   - name: The name of the queue.
+//   - binding: The binding key for the queue.
+//   - exchange: The name of the exchange to which the queue is bound.
+//
+// The 'nowait' parameter is set to false, which means the channel will wait for the server
+// to confirm the binding. If 'nowait' were set to true, the channel would not wait for a
+// confirmation and would return immediately.
+//
+// The 'args' parameter allows for extra arguments, but it's not used in this case.
+//
+// Returns:
+//   - An error if the binding operation fails.
+func (rc RabbitClient) CreateBinding(name, binding, exchange string) error {
+	return rc.ch.QueueBind(name, binding, exchange, false, nil)
 }
