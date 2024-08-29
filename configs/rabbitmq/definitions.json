@@ -1,0 +1,40 @@
+{
+  "vhosts": [
+    {
+      "name": "customers"
+    }
+  ],
+  "users": [
+    {
+      "name": "admin",
+      "password": "password",
+      "tags": "administrator"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "admin",
+      "vhost": "customers",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "topic_permissions": [
+    {
+      "user": "admin",
+      "vhost": "customers",
+      "exchange": "customer_events",
+      "write": "^customers.*",
+      "read": "^customers.*"
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "customer_events",
+      "vhost": "customers",
+      "type": "topic",
+      "durable": true
+    }
+  ]
+}
