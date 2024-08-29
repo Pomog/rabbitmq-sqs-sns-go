@@ -37,6 +37,15 @@ func main() {
 		panic(err)
 	}
 
+	// Create binding between the customer_events exchange and the customers-created queue
+	if err := client.CreateBinding("customers-created", "customers.created.*", "customer_events"); err != nil {
+		panic(err)
+	}
+	// Create binding between the customer_events exchange and the customers-test queue
+	if err := client.CreateBinding("customers-test", "customers.*", "customer_events"); err != nil {
+		panic(err)
+	}
+
 	time.Sleep(30 * time.Second)
 
 	log.Println(client)
