@@ -44,5 +44,18 @@ docker exec rabbitmq rabbitmqadmin declare exchange --vhost=customers name=custo
 docker exec rabbitmq rabbitmqctl set_topic_permissions -p customers admin customer_events "^customers.*" "^customers.*"
 ```
 
+## to make this setup easier create a rabbitmq.conf and definitions.jso and use docker volume
+```powershell
+docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 `
+  -v ${PWD}/configs/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf `
+  -v ${PWD}/configs/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json `
+  rabbitmq:3.13-management
+```
+## To build custom RabbitMQ with configurations
+```powershell
+docker build -t custom-rabbitmq .
+docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 custom-rabbitmq
+```
+
 
 

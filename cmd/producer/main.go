@@ -13,16 +13,19 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 	defer func(conn *amqp.Connection) {
 		err := conn.Close()
 		if err != nil {
 			log.Fatal("Critical Error")
 		}
 	}(conn)
+
 	client, err := internal.NewRabbitMQClient(conn)
 	if err != nil {
 		panic(err)
 	}
+
 	defer func(client internal.RabbitClient) {
 		err := client.Close()
 		if err != nil {
@@ -38,11 +41,11 @@ func main() {
 	}
 
 	// Create binding between the customer_events exchange and the customers-created queue
-	if err := client.CreateBinding("customers-created", "customers.created.*", "customer_events"); err != nil {
+	if err := client.CreateBinding("customers_created", "customers.created.*", "customer_events"); err != nil {
 		panic(err)
 	}
 	// Create binding between the customer_events exchange and the customers-test queue
-	if err := client.CreateBinding("customers-test", "customers.*", "customer_events"); err != nil {
+	if err := client.CreateBinding("customers_test", "customers.*", "customer_events"); err != nil {
 		panic(err)
 	}
 
