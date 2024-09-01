@@ -3,6 +3,7 @@ package internal
 import (
 	"context"
 	"fmt"
+	"log"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
@@ -33,6 +34,11 @@ func NewRabbitMQClient(conn *amqp.Connection) (RabbitClient, error) {
 	// But spawn a new Channel per routine
 	ch, err := conn.Channel()
 	if err != nil {
+		return RabbitClient{}, err
+	}
+
+	// Puts the Channel in confirm mode, which will allow waiting for ACK or NACK from the receiver
+	if err := ch.Confirm(false); err != nil {
 		return RabbitClient{}, err
 	}
 
@@ -72,9 +78,10 @@ func (rc RabbitClient) CreateBinding(name, binding, exchange string) error {
 	return rc.ch.QueueBind(name, binding, exchange, false, nil)
 }
 
-// Send is used to publish a payload onto an exchange with a given routing key
+// Send is used to publish a payload onto an exchange with a given routingkey
 func (rc RabbitClient) Send(ctx context.Context, exchange, routingKey string, options amqp.Publishing) error {
-	return rc.ch.PublishWithContext(ctx,
+	// PublishWithDeferredConfirmWithContext will wait for server to ACK the message
+	confirmation, err := rc.ch.PublishWithDeferredConfirmWithContext(ctx,
 		exchange,   // exchange
 		routingKey, // routing key
 		// Mandatory is used when we HAVE to have the message return an error, if there is no route or queue then
@@ -85,6 +92,12 @@ func (rc RabbitClient) Send(ctx context.Context, exchange, routingKey string, op
 		false,   // immediate
 		options, // amqp publishing struct
 	)
+	if err != nil {
+		return err
+	}
+	// Blocks until ACK from Server is receieved
+	log.Println(confirmation.Wait())
+	return nil
 }
 
 // Consume is a wrapper around consume, it will return a Channel that can be used to digest messages

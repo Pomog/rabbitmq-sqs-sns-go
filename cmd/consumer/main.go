@@ -32,8 +32,10 @@ func main() {
 	ctx := context.Background()
 	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 	defer cancel()
+
 	// Create an Err-group to manage concurrency
 	g, ctx := errgroup.WithContext(ctx)
+
 	// Set amount of concurrent tasks
 	g.SetLimit(10)
 	go func() {
@@ -44,6 +46,7 @@ func main() {
 				log.Printf("New Message: %v", msg)
 
 				time.Sleep(10 * time.Second)
+
 				// Multiple means that we acknowledge a batch of messages, leave false for now
 				if err := msg.Ack(false); err != nil {
 					log.Printf("Acknowledged message failed: Retry ? Handle manually %s\n", msg.MessageId)
