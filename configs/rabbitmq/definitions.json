@@ -33,7 +33,7 @@
     {
       "name": "customer_events",
       "vhost": "customers",
-      "type": "topic",
+      "type": "fanout",
       "durable": true
     }
   ]

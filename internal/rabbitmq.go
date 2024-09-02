@@ -54,9 +54,13 @@ func (rc RabbitClient) Close() error {
 }
 
 // CreateQueue will create a new queue based on given cfgs
-func (rc RabbitClient) CreateQueue(queueName string, durable, autoDelete bool) error {
-	_, err := rc.ch.QueueDeclare(queueName, durable, autoDelete, false, false, nil)
-	return err
+func (rc RabbitClient) CreateQueue(queueName string, durable, autoDelete bool) (amqp.Queue, error) {
+	q, err := rc.ch.QueueDeclare(queueName, durable, autoDelete, false, false, nil)
+	if err != nil {
+		return amqp.Queue{}, nil
+	}
+
+	return q, nil
 }
 
 // CreateBinding connects a queue to an exchange using the specified binding rule.
@@ -78,7 +82,7 @@ func (rc RabbitClient) CreateBinding(name, binding, exchange string) error {
 	return rc.ch.QueueBind(name, binding, exchange, false, nil)
 }
 
-// Send is used to publish a payload onto an exchange with a given routingkey
+// Send is used to publish a payload onto an exchange with a given routing key
 func (rc RabbitClient) Send(ctx context.Context, exchange, routingKey string, options amqp.Publishing) error {
 	// PublishWithDeferredConfirmWithContext will wait for server to ACK the message
 	confirmation, err := rc.ch.PublishWithDeferredConfirmWithContext(ctx,
@@ -95,7 +99,7 @@ func (rc RabbitClient) Send(ctx context.Context, exchange, routingKey string, op
 	if err != nil {
 		return err
 	}
-	// Blocks until ACK from Server is receieved
+	// Blocks until ACK from Server is received
 	log.Println(confirmation.Wait())
 	return nil
 }

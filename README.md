@@ -34,7 +34,7 @@ docker exec rabbitmq rabbitmqctl add_vhost customers
 docker exec rabbitmq rabbitmqctl set_permissions -p customers admin ".*" ".*" ".*"
 ```
 
-## Declaration of the Topic exchange using the rabbitmqadmin.
+## Declaration of the Topic exchange using the rabbitmq admin.
 ```bash
 docker exec rabbitmq rabbitmqadmin declare exchange --vhost=customers name=customer_events type=topic -u admin -p password durable=true
 ```
@@ -51,6 +51,14 @@ docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 `
   -v ${PWD}/configs/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json `
   rabbitmq:3.13-management
 ```
+
+## removing Topic exchange and declaring new Fanout exchange with permissions
+```powershell
+docker exec rabbitmq rabbitmqadmin delete exchange name=customer_events --vhost=customers -u percy -p secret
+docker exec rabbitmq rabbitmqadmin declare exchange --vhost=customers name=customer_events type=fanout -u percy -p secret durable=true
+docker exec rabbitmq rabbitmqctl set_topic_permissions -p customers percy customer_events ".*" ".*"
+```
+
 ## To build custom RabbitMQ with configurations
 ```powershell
 docker build -t custom-rabbitmq .
