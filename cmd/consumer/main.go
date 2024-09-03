@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"github.com/Pomog/rabbitmq-sqs-sns-go/internal"
+	"github.com/rabbitmq/amqp091-go"
 	"golang.org/x/sync/errgroup"
 	"log"
 	"time"
@@ -15,7 +16,18 @@ func main() {
 		panic(err)
 	}
 
+	publishConn, err := internal.ConnectRabbitMQ("admin", "password", "localhost:5672", "customers")
+	if err != nil {
+		panic(err)
+	}
+	defer publishConn.Close()
+
 	mqClient, err := internal.NewRabbitMQClient(conn)
+	if err != nil {
+		panic(err)
+	}
+
+	publishClient, err := internal.NewRabbitMQClient(publishConn)
 	if err != nil {
 		panic(err)
 	}
@@ -55,16 +67,21 @@ func main() {
 			// Spawn a worker
 			msg := message
 			g.Go(func() error {
-				log.Printf("New Message: %v", msg)
-
-				time.Sleep(10 * time.Second)
-
 				// Multiple means that we acknowledge a batch of messages, leave false for now
 				if err := msg.Ack(false); err != nil {
 					log.Printf("Acknowledged message failed: Retry ? Handle manually %s\n", msg.MessageId)
 					return err
 				}
-				log.Printf("Acknowledged message %s\n", msg.MessageId)
+				log.Printf("Acknowledged message, replying to %s\n", msg.ReplyTo)
+				// Use the msg.ReplyTo to send the message to the proper Queue
+				if err := publishClient.Send(ctx, "customer_callbacks", msg.ReplyTo, amqp091.Publishing{
+					ContentType:   "text/plain",      // The payload we send is plaintext, could be JSON or others..
+					DeliveryMode:  amqp091.Transient, // This tells rabbitMQ to drop messages if restarted
+					Body:          []byte("RPC Complete"),
+					CorrelationId: msg.CorrelationId,
+				}); err != nil {
+					panic(err)
+				}
 				return nil
 			})
 		}

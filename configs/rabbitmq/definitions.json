@@ -27,6 +27,13 @@
       "exchange": "customer_events",
       "write": "^customers.*",
       "read": "^customers.*"
+    },
+    {
+      "user": "admin",
+      "vhost": "customers",
+      "exchange": "customer_callbacks",
+      "write": ".*",
+      "read": ".*"
     }
   ],
   "exchanges": [
@@ -34,6 +41,12 @@
       "name": "customer_events",
       "vhost": "customers",
       "type": "fanout",
+      "durable": true
+    },
+    {
+      "name": "customer_callbacks",
+      "vhost": "customers",
+      "type": "direct",
       "durable": true
     }
   ]

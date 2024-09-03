@@ -59,11 +59,19 @@ docker exec rabbitmq rabbitmqadmin declare exchange --vhost=customers name=custo
 docker exec rabbitmq rabbitmqctl set_topic_permissions -p customers percy customer_events ".*" ".*"
 ```
 
+## Creating a new Exchange with Direct type.
+```powershell
+docker exec rabbitmq rabbitmqadmin declare exchange --vhost=customers name=customer_callbacks type=direct -u admin -p password durable=true
+docker exec rabbitmq rabbitmqctl set_topic_permissions -p customers admin customer_callbacks ".*" ".*"
+```
+
 ## To build custom RabbitMQ with configurations
 ```powershell
 docker build -t custom-rabbitmq .
 docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 custom-rabbitmq
 ```
+
+
 
 
 
