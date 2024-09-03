@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	conn, err := internal.ConnectRabbitMQ("percy", "secret", "localhost:5672", "customers")
+	conn, err := internal.ConnectRabbitMQ("admin", "password", "localhost:5672", "customers")
 
 	if err != nil {
 		panic(err)
