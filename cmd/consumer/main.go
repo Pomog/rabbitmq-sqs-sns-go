@@ -62,6 +62,12 @@ func main() {
 
 	// Set amount of concurrent tasks
 	g.SetLimit(10)
+
+	// Apply Qos to limit amount of messages to consume
+	if err := mqClient.ApplyQos(10, 0, true); err != nil {
+		panic(err)
+	}
+
 	go func() {
 		for message := range messageBus {
 			// Spawn a worker
