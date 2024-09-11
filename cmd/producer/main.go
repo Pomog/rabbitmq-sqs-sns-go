@@ -10,7 +10,11 @@ import (
 )
 
 func main() {
-	conn, err := internal.ConnectRabbitMQ("admin", "password", "localhost:5672", "customers")
+	conn, err := internal.ConnectRabbitMQ("admin", "password", "localhost:5671", "customers",
+		"certs/ca_certificate.pem",
+		"certs/server_blackbox_certificate.pem",
+		"certs/server_blackbox_key.pem",
+	)
 	if err != nil {
 		panic(err)
 	}
@@ -22,7 +26,11 @@ func main() {
 	}(conn)
 
 	// Never use the same Connection for Consume and Publish
-	consumeConn, err := internal.ConnectRabbitMQ("admin", "password", "localhost:5672", "customers")
+	consumeConn, err := internal.ConnectRabbitMQ("admin", "password", "localhost:5671", "customers",
+		"certs/ca_certificate.pem",
+		"certs/server_blackbox_certificate.pem",
+		"certs/server_blackbox_key.pem",
+	)
 	if err != nil {
 		panic(err)
 	}
