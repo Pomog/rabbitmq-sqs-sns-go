@@ -58,3 +58,8 @@ If the new hash value matches the decrypted hash, this proves that:
 * The certificate’s content (public key, identity info) has not been changed.
 
 # This scheme not included SAN (Subject Alternative Name) in the certificate.
+
+# Checksum
+```bash
+openssl x509 -noout -modulus -in server2_certificate.pem | openssl md5
+```
