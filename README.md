@@ -75,6 +75,10 @@ docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 custom-rabbitmq
 docker run -d --name rabbitmq -p 5671:5671 -p 5672:5672 -p 15672:15672 custom-rabbitmq
 ```
 
+```powershell
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' rabbitmq
+```
+
 ## check
 
 

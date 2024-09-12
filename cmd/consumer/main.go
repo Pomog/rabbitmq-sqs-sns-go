@@ -11,19 +11,19 @@ import (
 
 func main() {
 
-	conn, err := internal.ConnectRabbitMQ("admin", "password", "172.17.0.2:5671", "customers",
+	conn, err := internal.ConnectRabbitMQ("admin", "password", "localhost:5671", "customers",
 		"certs/ca_certificate.pem",
-		"certs/server_blackbox_certificate.pem",
-		"certs/server_blackbox_key.pem",
+		"certs/server2_certificate.pem",
+		"certs/server2_key.pem",
 	)
 	if err != nil {
 		panic(err)
 	}
 
-	publishConn, err := internal.ConnectRabbitMQ("admin", "password", "172.17.0.2:5671", "customers",
+	publishConn, err := internal.ConnectRabbitMQ("admin", "password", "localhost:5671", "customers",
 		"certs/ca_certificate.pem",
-		"certs/server_blackbox_certificate.pem",
-		"certs/server_blackbox_key.pem",
+		"certs/server2_certificate.pem",
+		"certs/server2_key.pem",
 	)
 	if err != nil {
 		panic(err)
